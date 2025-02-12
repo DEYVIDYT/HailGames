@@ -1,0 +1,84 @@
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sites para Baixar Jogos de PC</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <video autoplay muted loop id="background-video">
+    <source src="https://github.com/DEYVIDYT/HailGames/raw/refs/heads/main/5224888625480578057_play.mp4_logo_BR.mp4" type="video/mp4">
+    Your browser does not support HTML5 video.
+  </video>
+
+  <div class="container">
+    <h1>Sites para Baixar Jogos de PC</h1>
+    <p>Lista de sites para baixar jogos de PC (sujeito a modificações dos administradores).</p>
+
+    <section id="search-section">
+      <h2>Pesquisar Jogo</h2>
+      <input type="text" id="game-name" placeholder="Nome do Jogo">
+      <select id="site-select">
+        <option value="https://steamunlocked.net/">SteamUnlocked</option>
+        <option value="https://steamrip.com/">SteamRIP</option>
+        <option value="https://repack-games.com/">Repack-Games</option>
+        <option value="https://steam-repacks.net/">Steam-Repacks</option>
+        <option value="https://gamingbeasts.com/">GamingBeasts</option>
+        <option value="https://atopgames.com/">AtopGames</option>
+      </select>
+      <button onclick="pesquisarJogo()">Pesquisar</button>
+    </section>
+
+    <section class="site-list">
+      <div class="site">
+        <a href="https://steamunlocked.net/" target="_blank">SteamUnlocked</a>
+        <span class="type">Pré-instalados</span>
+      </div>
+
+      <div class="site">
+        <a href="https://steamrip.com/" target="_blank">SteamRIP</a>
+        <span class="type">Pré-instalados</span>
+      </div>
+
+      <div class="site">
+        <a href="https://repack-games.com/" target="_blank">Repack-Games</a>
+        <span class="type">Pré-instalados</span>
+      </div>
+
+      <div class="site">
+        <a href="https://steam-repacks.net/" target="_blank">Steam-Repacks</a>
+        <span class="type">Pré-instalados</span>
+      </div>
+
+      <div class="site">
+        <a href="https://gamingbeasts.com/" target="_blank">GamingBeasts</a>
+        <span class="type">Pré-instalados</span>
+      </div>
+
+      <div class="site">
+        <a href="https://atopgames.com/" target="_blank">AtopGames</a>
+        <span class="type">Pré-instalados</span>
+      </div>
+
+      <div class="site">
+        <a href="https://optijuegos.github.io/" target="_blank">OptiJuegos</a>
+        <span class="type">Pré-instalados</span>
+      </div>
+    </section>
+
+    <footer>
+      <p>Aviso: A disponibilidade e segurança dos jogos nestes sites podem variar. Use com precaução.</p>
+    </footer>
+  </div>
+
+  <script>
+    function pesquisarJogo() {
+      const gameName = document.getElementById('game-name').value;
+      const siteURL = document.getElementById('site-select').value;
+      const searchURL = siteURL + '/?s=' + encodeURIComponent(gameName); // Basic search URL construction
+      window.open(searchURL, '_blank');
+    }
+  </script>
+</body>
+</html>
