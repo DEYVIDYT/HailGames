@@ -1,1 +1,213 @@
 
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Winlator / GameFusion</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f4;
+      color: #333;
+    }
+
+    header {
+      background-color: #333;
+      color: #fff;
+      padding: 1em 0;
+      text-align: center;
+    }
+
+    main {
+      padding: 20px;
+    }
+
+    .version-list {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .version-item {
+      background-color: #fff;
+      border: 1px solid #ddd;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .version-item h2 {
+      margin-top: 0;
+      color: #0056b3;
+    }
+
+    .version-item p {
+      margin-bottom: 10px;
+    }
+
+    .version-item a {
+      display: inline-block;
+      padding: 8px 16px;
+      background-color: #007bff;
+      color: #fff;
+      text-decoration: none;
+      border-radius: 5px;
+      transition: background-color 0.3s ease;
+    }
+
+    .version-item a:hover {
+      background-color: #0056b3;
+    }
+
+    footer {
+      background-color: #333;
+      color: #fff;
+      text-align: center;
+      padding: 1em 0;
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+    }
+
+    /* Estilos responsivos para telas menores */
+    @media (max-width: 600px) {
+      .version-list {
+        gap: 10px;
+        /* Reduz o espaço entre os itens */
+      }
+
+      .version-item {
+        padding: 10px;
+        /* Reduz o preenchimento nos itens */
+      }
+
+      .version-item h2 {
+        font-size: 1.2em;
+        /* Reduz o tamanho da fonte dos títulos */
+      }
+
+      .version-item p {
+        font-size: 0.9em;
+        /* Reduz o tamanho da fonte dos parágrafos */
+      }
+
+      .version-item a {
+        padding: 6px 12px;
+        /* Reduz o preenchimento nos links */
+        font-size: 0.9em;
+        /* Reduz o tamanho da fonte nos links */
+      }
+
+      footer {
+        font-size: 0.8em;
+        /* Reduz o tamanho da fonte no rodapé */
+        padding: 0.5em 0;
+        /* Reduz o preenchimento no rodapé */
+      }
+    }
+
+    /* Styles for the navigation bar */
+    .navbar {
+      background-color: #333;
+      overflow: hidden;
+      display: flex;
+      justify-content: space-around;
+    }
+
+    .navbar a {
+      float: left;
+      display: block;
+      color: white;
+      text-align: center;
+      padding: 14px 16px;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .navbar a:hover {
+      background-color: #ddd;
+      color: black;
+    }
+
+    /* Style for hiding/showing content */
+    .content {
+      display: none;
+      padding: 20px;
+    }
+
+    .content.active {
+      display: block;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="navbar">
+    <a onclick="showContent('winlator')">Winlator</a>
+    <a onclick="showContent('gamefusion')">GameFusion</a>
+  </div>
+
+  <main id="winlator" class="content active">
+    <section class="version-list">
+      <div class="version-item">
+        <h2>Winlator Oficial</h2>
+        <p>A versão oficial do Winlator.</p>
+        <a href="https://github.com/brunodev85/winlator/releases" target="_blank">Releases no GitHub</a>
+      </div>
+
+      <div class="version-item">
+        <h2>Winlator Frost</h2>
+        <p>Uma versão modificada do Winlator.</p>
+        <a href="https://github.com/MrPhryaNikFrosty/Winlator-Frost/releases" target="_blank">Releases no GitHub</a>
+      </div>
+
+      <div class="version-item">
+        <h2>Winlator afei</h2>
+        <p>Outra versão modificada do Winlator.</p>
+        <a href="https://github.com/afeimod/winlator-mod/releases" target="_blank">Releases no GitHub</a>
+      </div>
+
+      <div class="version-item">
+        <h2>Winlator with Native Glibc</h2>
+        <p>Winlator com Glibc nativo.</p>
+        <a href="https://github.com/longjunyu2/winlator/releases" target="_blank">Releases no GitHub</a>
+      </div>
+
+      <div class="version-item">
+        <h2>Winlator Coffincolors</h2>
+        <p>Mais uma versão customizada do Winlator.</p>
+        <a href="https://github.com/coffincolors/winlator/releases" target="_blank">Releases no GitHub</a>
+      </div>
+
+      <div class="version-item">
+        <h2>Drivers turnip para Winlator</h2>
+        <p>Drivers Turnip para melhor desempenho gráfico.</p>
+        <a href="https://github.com/K11MCH1/WinlatorTurnipDrivers/releases" target="_blank">Releases no GitHub</a>
+      </div>
+    </section>
+  </main>
+
+  <main id="gamefusion" class="content">
+    <iframe src="https://hub.xiaoji.com/" width="100%" height="600px"></iframe>
+  </main>
+
+  <script>
+    function showContent(id) {
+      // Hide all content divs
+      var contents = document.getElementsByClassName("content");
+      for (var i = 0; i < contents.length; i++) {
+        contents[i].classList.remove("active");
+      }
+
+      // Show the selected content
+      document.getElementById(id).classList.add("active");
+    }
+  </script>
+
+</body>
+
+</html>
