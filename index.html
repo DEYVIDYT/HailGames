@@ -2,21 +2,26 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sites para Baixar Jogos de PC</title>
+  <title>HailGames Tools</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <video autoplay muted loop id="background-video">
-    <source src="https://github.com/DEYVIDYT/HailGames/raw/refs/heads/main/5224888625480578057_play.mp4_logo_BR.mp4" type="video/mp4">
-    Your browser does not support HTML5 video.
-  </video>
+  <button class="back-button" onclick="goBack()">Voltar</button>
 
   <div class="container">
-    <h1>Sites para Baixar Jogos de PC</h1>
+    <h1>HailGames Tools</h1>
     <p>Lista de sites para baixar jogos de PC (sujeito a modificações dos administradores).</p>
 
-    <section id="search-section">
+    <div id="choice-section">
+      <h2>O que você deseja fazer?</h2>
+      <button onclick="showSites()">Ver sites de jogos de PC</button>
+      <button onclick="showUploadForm()">Fazer upload de arquivos temporários</button>
+      <button onclick="showExtractor()">Extractor de Links - Internet Archive</button>
+      <button onclick="showEmulatorPage()">Emuladores de PC para Android</button>
+    </div>
+
+    <section id="search-section" style="display: none;">
       <h2>Pesquisar Jogo</h2>
       <input type="text" id="game-name" placeholder="Nome do Jogo">
       <select id="site-select">
@@ -30,7 +35,7 @@
       <button onclick="pesquisarJogo()">Pesquisar</button>
     </section>
 
-    <section class="site-list">
+    <section class="site-list" style="display: none;">
       <div class="site">
         <a href="https://steamunlocked.net/" target="_blank">SteamUnlocked</a>
         <span class="type">Pré-instalados</span>
@@ -62,23 +67,313 @@
       </div>
 
       <div class="site">
-        <a href="https://optijuegos.github.io/" target="_blank">OptiJuegos</a>
-        <span class="type">Pré-instalados</span>
+        <a href="https://www.tendoku.com/" target="_blank">Tendoku</a>
+        <span class="type">Switch</span>
       </div>
+    </section>
+    
+    <section id="upload-section" style="display: none;">
+      <h2>Upload de Arquivos para Gofile.io</h2>
+      <form id="uploadForm">
+        <label for="fileInput">Selecione um arquivo para enviar:</label>
+        <input type="file" id="fileInput" name="file" required>
+        <button type="submit">Enviar</button>
+      </form>
+      <div id="progress-bar-container">
+        <div id="progress-bar"></div>
+      </div>
+      <p id="progress-label">0%</p>
+      <h2>Resultado do Upload:</h2>
+      <p id="result"></p>
+    </section>
+
+    <section id="extractor-section" style="display: none;">
+      <h2>Extractor de Links - Internet Archive</h2>
+      <iframe id="extractor-iframe" src="" style="width:100%; height:500px; border:none;"></iframe>
+    </section>
+
+    <section id="emulator-section" style="display: none;">
+      <h2>Emuladores de PC para Android</h2>
+      <iframe id="emulator-iframe" src="" style="width:100%; height:500px; border:none;"></iframe>
     </section>
 
     <footer>
-      <p>Aviso: A disponibilidade e segurança dos jogos nestes sites podem variar. Use com precaução.</p>
+      <p>Aviso: Aickenibilidade e segurança dos jogos nestes sites podem variar. Use com precaução.</p>
     </footer>
   </div>
 
+  <div id="music-player-container">
+    <button id="minimize-button">Minimizar</button>
+    <div class="track-info">
+      <span class="track-name"></span>
+      <span class="track-number"></span>
+    </div>
+    <audio controls></audio>
+    <div class="controls">
+      <button id="prev-track">Anterior</button>
+      <button id="next-track">Próxima</button>
+    </div>
+    <div class="player-logo">▶</div> 
+  </div>
+
   <script>
+    function showSites() {
+      document.getElementById('choice-section').style.display = 'none';
+      document.getElementById('search-section').style.display = 'block';
+      document.querySelector('.site-list').style.display = 'block';
+      document.getElementById('upload-section').style.display = 'none';
+      document.getElementById('extractor-section').style.display = 'none';
+      document.getElementById('emulator-section').style.display = 'none';
+    }
+
+    function showUploadForm() {
+      document.getElementById('choice-section').style.display = 'none';
+      document.getElementById('search-section').style.display = 'none';
+      document.querySelector('.site-list').style.display = 'none';
+      document.getElementById('upload-section').style.display = 'block';
+      document.getElementById('extractor-section').style.display = 'none';
+      document.getElementById('emulator-section').style.display = 'none';
+    }
+
+    function showExtractor() {
+      document.getElementById('choice-section').style.display = 'none';
+      document.getElementById('search-section').style.display = 'none';
+      document.querySelector('.site-list').style.display = 'none';
+      document.getElementById('upload-section').style.display = 'none';
+      document.getElementById('extractor-section').style.display = 'block';
+      document.getElementById('emulator-section').style.display = 'none';
+      
+      fetch('https://raw.githubusercontent.com/DEYVIDYT/HailGames/refs/heads/main/Pages/Extractor%20de%20Links.html')
+        .then(response => response.text())
+        .then(data => {
+          const iframe = document.getElementById('extractor-iframe');
+          iframe.srcdoc = data;
+        })
+        .catch(error => console.error('Error loading extractor page:', error));
+    }
+
+    function showEmulatorPage() {
+      document.getElementById('choice-section').style.display = 'none';
+      document.getElementById('search-section').style.display = 'none';
+      document.querySelector('.site-list').style.display = 'none';
+      document.getElementById('upload-section').style.display = 'none';
+      document.getElementById('extractor-section').style.display = 'none';
+      document.getElementById('emulator-section').style.display = 'block';
+
+      fetch('https://raw.githubusercontent.com/DEYVIDYT/HailGames/refs/heads/main/Pages/PC%20emulator.html')
+        .then(response => response.text())
+        .then(data => {
+          const iframe = document.getElementById('emulator-iframe');
+          iframe.srcdoc = data;
+        })
+        .catch(error => console.error('Error loading emulator page:', error));
+    }
+
     function pesquisarJogo() {
       const gameName = document.getElementById('game-name').value;
       const siteURL = document.getElementById('site-select').value;
-      const searchURL = siteURL + '/?s=' + encodeURIComponent(gameName); // Basic search URL construction
+      const searchURL = siteURL + '/?s=' + encodeURIComponent(gameName); 
       window.open(searchURL, '_blank');
     }
+    
+    function goBack() {
+      document.getElementById('search-section').style.display = 'none';
+      document.querySelector('.site-list').style.display = 'none';
+      document.getElementById('upload-section').style.display = 'none';
+      document.getElementById('extractor-section').style.display = 'none';
+      document.getElementById('emulator-section').style.display = 'none';
+      document.getElementById('choice-section').style.display = 'block';
+    }
+
+    async function getServer() {
+      try {
+        const response = await fetch('https://api.gofile.io/servers');
+        const data = await response.json();
+
+        console.log('Resposta da API de servidores:', data);
+
+        if (data.status === 'ok' && data.data && Array.isArray(data.data.servers) && data.data.servers.length > 0) {
+          return data.data.servers[0].name;
+        } else {
+          throw new Error('Nenhum servidor disponível ou resposta inválida.');
+        }
+      } catch (error) {
+        document.getElementById('result').textContent = 'Erro ao obter servidores: ' + error.message;
+        throw error;
+      }
+    }
+
+    async function uploadFile(server, file) {
+      return new Promise((resolve, reject) => {
+        const formData = new FormData();
+        formData.append('file', file);
+
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', `https://${server}.gofile.io/contents/uploadfile`, true);
+
+        xhr.upload.onprogress = function(event) {
+          if (event.lengthComputable) {
+            const percentComplete = (event.loaded / event.total) * 100;
+            document.getElementById('progress-bar').style.width = percentComplete + '%';
+            document.getElementById('progress-label').textContent = percentComplete.toFixed(2) + '%';
+          } else {
+            console.warn('Total size not available');
+          }
+        };
+
+        xhr.onload = function() {
+          if (xhr.status === 200) {
+            const data = JSON.parse(xhr.responseText);
+            if (data.status === 'ok') {
+              resolve(data);
+            } else {
+              reject(new Error(data.message));
+            }
+          } else {
+            reject(new Error('Erro no upload: ' + xhr.status));
+          }
+        };
+
+        xhr.onerror = function() {
+          reject(new Error('Erro de rede ao enviar o arquivo.'));
+        };
+
+        xhr.send(formData);
+      });
+    }
+
+    document.getElementById('uploadForm').addEventListener('submit', async function(event) {
+      event.preventDefault();
+
+      const fileInput = document.getElementById('fileInput');
+      const file = fileInput.files[0];
+
+      if (!file) {
+        document.getElementById('result').textContent = 'Por favor, selecione um arquivo.';
+        return;
+      }
+
+      document.getElementById('progress-bar').style.width = '0%';
+      document.getElementById('progress-label').textContent = '0%';
+      document.getElementById('result').textContent = ''; 
+
+      try {
+        const server = await getServer();
+
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', `https://${server}.gofile.io/contents/uploadfile`, true);
+
+        xhr.upload.onprogress = function(event) {
+          if (event.lengthComputable) {
+            const percentComplete = (event.loaded / event.total) * 100;
+            document.getElementById('progress-bar').style.width = percentComplete + '%';
+            document.getElementById('progress-label').textContent = percentComplete.toFixed(2) + '%';
+          }
+        };
+        
+        xhr.onload = async function() {
+          if (xhr.status === 200) {
+            const data = JSON.parse(xhr.responseText);
+            if (data.status === 'ok') {
+              document.getElementById('result').textContent = 'Arquivo enviado com sucesso! Link para o arquivo: ' + data.data.downloadPage;
+            } else {
+              document.getElementById('result').textContent = 'Erro ao enviar o arquivo: ' + data.message;
+            }
+          } else {
+            document.getElementById('result').textContent = 'Erro ao enviar o arquivo: ' + xhr.statusText;
+          }
+        };
+
+        const formData = new FormData();
+        formData.append('file', file);
+        xhr.send(formData);
+
+      } catch (error) {
+        document.getElementById('result').textContent = 'Erro ao enviar o arquivo: ' + error.message;
+      }
+    });
+
+    // Music player functionality
+    window.addEventListener('load', async () => {
+      const musicPlayerContainer = document.getElementById('music-player-container');
+      const audioPlayer = document.querySelector('#music-player-container audio');
+      const trackNameDisplay = document.querySelector('#music-player-container .track-name');
+      const trackNumberDisplay = document.querySelector('#music-player-container .track-number');
+      const prevTrackButton = document.querySelector('#music-player-container #prev-track');
+      const nextTrackButton = document.querySelector('#music-player-container #next-track');
+      const minimizeButton = document.querySelector('#music-player-container #minimize-button');
+      const playerLogo = document.querySelector('#music-player-container .player-logo');
+
+      let musicList = [];
+      let currentTrackIndex = 0;
+      let isMinimized = false; 
+
+      minimizeButton.addEventListener('click', () => {
+        isMinimized = !isMinimized;
+        musicPlayerContainer.classList.toggle('minimized', isMinimized);
+      });
+
+      function togglePlayerVisibility() {
+        isMinimized = !isMinimized;
+        musicPlayerContainer.classList.toggle('minimized', isMinimized);
+      }
+
+      playerLogo.addEventListener('click', togglePlayerVisibility);
+
+      try {
+        const response = await fetch('https://raw.githubusercontent.com/DEYVIDYT/HailGames/refs/heads/main/Music.json');
+        const data = await response.json();
+
+        if (data && data.musicas && data.musicas.length > 0) {
+          musicList = data.musicas;
+
+          function loadTrack(index) {
+            audioPlayer.src = musicList[index].link;
+            audioPlayer.title = musicList[index].nome;
+            trackNameDisplay.textContent = musicList[index].nome;
+            updateTrackNumberDisplay();
+          }
+
+          function updateTrackNumberDisplay() {
+            trackNumberDisplay.textContent = `Música ${currentTrackIndex + 1} de ${musicList.length}`;
+          }
+
+          function playTrack(index) {
+            loadTrack(index);
+            const playPromise = audioPlayer.play();
+
+            if (playPromise !== undefined) {
+              playPromise.then(() => {
+              }).catch(error => {
+                console.error("Autoplay prevented:", error);
+              });
+            }
+          }
+
+          loadTrack(currentTrackIndex);
+
+          audioPlayer.addEventListener('ended', () => {
+            currentTrackIndex = (currentTrackIndex + 1) % musicList.length;
+            playTrack(currentTrackIndex);
+          });
+
+          prevTrackButton.addEventListener('click', () => {
+            currentTrackIndex = (currentTrackIndex - 1 + musicList.length) % musicList.length;
+            playTrack(currentTrackIndex);
+          });
+
+          nextTrackButton.addEventListener('click', () => {
+            currentTrackIndex = (currentTrackIndex + 1) % musicList.length;
+            playTrack(currentTrackIndex);
+          });
+
+        } else {
+          console.error('No music tracks found in the JSON.');
+        }
+      } catch (error) {
+        console.error('Error fetching music data:', error);
+      }
+    });
   </script>
 </body>
 </html>

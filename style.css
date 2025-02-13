@@ -1,42 +1,120 @@
 body {
-  font-family: sans-serif;
-  background-color: #f4f4f4;
+  font-family: 'Arial', sans-serif;
+  background-color: #121212;
+  color: #fff;
   margin: 0;
   padding: 0;
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  position: relative; 
-}
-
-#background-video {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover; 
-  z-index: -1; 
 }
 
 .container {
-  background-color: rgba(255, 255, 255, 0.8); 
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  padding: 20px;
-  width: 80%;
-  max-width: 600px;
-  position: relative; 
-  z-index: 1; 
+  background-color: rgba(30, 30, 30, 0.9);
+  border-radius: 15px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+  padding: 40px;
+  width: 90%;
+  max-width: 1000px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 h1 {
   text-align: center;
-  color: #333;
+  color: #eee;
+  margin-bottom: 25px;
+  font-size: 2.5em;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
 }
 
+p {
+  text-align: center;
+  color: #bbb;
+  margin-bottom: 40px;
+  font-size: 1.1em;
+  line-height: 1.6;
+}
+
+#choice-section,
+#search-section,
+.site-list,
+#upload-section,
+#extractor-section {
+  width: 100%;
+  margin-bottom: 40px;
+  padding: 30px;
+  background-color: rgba(40, 40, 40, 0.8);
+  border-radius: 12px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4);
+}
+
+#choice-section h2,
+#search-section h2,
+#upload-section h2,
+#extractor-section h2 {
+  color: #ddd;
+  margin-bottom: 20px;
+  font-size: 1.8em;
+  text-align: center;
+}
+
+#choice-section button {
+  padding: 18px 35px;
+  margin: 15px;
+  font-size: 1.2em;
+  border: none;
+  border-radius: 10px;
+  background-color: #5c6bc0;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+#choice-section button:hover {
+  background-color: #3949ab;
+}
+
+/* Search Section */
+#search-section input[type="text"],
+#search-section select,
+#search-section button {
+  padding: 12px;
+  margin: 10px;
+  border-radius: 8px;
+  border: 1px solid #666;
+  background-color: #222;
+  color: #fff;
+  transition: border-color 0.3s ease;
+  font-size: 1em;
+}
+
+#search-section input[type="text"]:focus,
+#search-section select:focus {
+  border-color: #5c6bc0;
+  outline: none;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.5);
+}
+
+#search-section button {
+  background-color: #5c6bc0;
+  color: white;
+  cursor: pointer;
+  border: none;
+  transition: background-color 0.3s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+#search-section button:hover {
+  background-color: #3949ab;
+}
+
+/* Site List */
 .site-list {
+  width: 100%;
   margin-top: 20px;
 }
 
@@ -44,65 +122,267 @@ h1 {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px;
-  border-bottom: 1px solid #eee;
+  padding: 20px;
+  border-bottom: 1px solid #444;
+  transition: background-color 0.3s ease;
 }
 
 .site:last-child {
   border-bottom: none;
 }
 
+.site:hover {
+  background-color: rgba(50, 50, 50, 0.7);
+}
+
 .site a {
   text-decoration: none;
-  color: #007bff;
+  color: #80d8ff;
   font-weight: bold;
+  transition: color 0.3s ease;
+  font-size: 1.1em;
 }
 
 .site a:hover {
   text-decoration: underline;
+  color: #4dd0e1;
 }
 
 .site .type {
   font-style: italic;
-  color: #777;
+  color: #999;
+  font-size: 0.9em;
 }
 
+/* Upload Section */
+#upload-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#uploadForm {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  width: 100%;
+  max-width: 500px;
+}
+
+#uploadForm label {
+  text-align: left;
+  margin-bottom: 8px;
+  color: #ddd;
+  font-size: 1.1em;
+}
+
+#uploadForm input[type="file"] {
+  margin-bottom: 25px;
+  padding: 12px;
+  border: 1px solid #666;
+  border-radius: 8px;
+  background-color: #222;
+  color: #fff;
+  font-size: 1em;
+}
+
+#uploadForm button {
+  background-color: #4caf50;
+  color: white;
+  padding: 15px 25px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  font-size: 1.1em;
+}
+
+#uploadForm button:hover {
+  background-color: #367C39;
+}
+
+#result {
+  margin-top: 30px;
+  color: #ddd;
+  font-weight: bold;
+  text-align: center;
+  font-size: 1.2em;
+}
+
+#progress-bar-container {
+  width: 100%;
+  background-color: #333;
+  border-radius: 12px;
+  margin-bottom: 25px;
+  height: 25px;
+  overflow: hidden;
+}
+
+#progress-bar {
+  width: 0%;
+  height: 100%;
+  background-color: #4CAF50;
+  border-radius: 12px;
+  transition: width 0.3s ease;
+}
+
+#progress-label {
+  text-align: center;
+  color: #bbb;
+  margin-bottom: 25px;
+  font-size: 1em;
+}
+
+/* Extractor Section */
+#extractor-section {
+  padding: 20px;
+}
+
+#extractor-iframe {
+  width: 100%;
+  height: 600px;
+  border: none;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+/* Footer */
 footer {
-  margin-top: 20px;
+  margin-top: 40px;
   text-align: center;
-  color: #555;
-  font-size: 0.8em;
+  color: #777;
+  font-size: 0.9em;
+  border-top: 1px solid #444;
+  padding-top: 20px;
 }
 
-#search-section {
-  margin-top: 20px;
+/* Music Player */
+#music-player-container {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  background-color: rgba(40, 40, 40, 0.9);
   padding: 15px;
-  background-color: #f9f9f9;
-  border-radius: 5px;
+  border-radius: 12px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  width: 320px;
+  transition: all 0.3s ease;
+}
+
+#music-player-container.minimized {
+  width: 50px;
+  height: 50px;
+  padding: 5px;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+#music-player-container.minimized .track-info,
+#music-player-container.minimized audio,
+#music-player-container.minimized .controls,
+#music-player-container.minimized #minimize-button,
+#music-player-container.minimized .track-number {
+  display: none;
+}
+
+#music-player-container .track-info {
   text-align: center;
+  margin-bottom: 8px;
+  width: 100%;
 }
 
-#search-section h2 {
-  color: #333;
-  margin-bottom: 10px;
+#music-player-container .track-info .track-name {
+  font-weight: bold;
+  color: #eee;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+  font-size: 1.1em;
 }
 
-#search-section input[type="text"],
-#search-section select,
-#search-section button {
-  padding: 8px;
-  margin: 5px;
-  border-radius: 4px;
-  border: 1px solid #ddd;
+#music-player-container .track-info .track-number {
+  font-size: 0.9em;
+  color: #999;
 }
 
-#search-section button {
-  background-color: #007bff;
+#music-player-container audio {
+  width: 100%;
+}
+
+#music-player-container .controls {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  width: 100%;
+  margin-top: 8px;
+}
+
+#music-player-container .controls button {
+  background: none;
+  border: none;
+  font-size: 1.4em;
+  cursor: pointer;
+  color: #80d8ff;
+  transition: color 0.3s ease;
+}
+
+#music-player-container .controls button:hover {
+  color: #4dd0e1;
+}
+
+#music-player-container #minimize-button {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background: none;
+  border: none;
+  font-size: 1.2em;
+  cursor: pointer;
+  color: #80d8ff;
+  transition: color 0.3s ease;
+}
+
+#music-player-container #minimize-button:hover {
+  color: #4dd0e1;
+}
+
+#music-player-container.minimized #minimize-button {
+  display: none;
+}
+
+#music-player-container.minimized .player-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  font-size: 2em;
+  color: #80d8ff;
+  cursor: pointer;
+}
+
+/* Back Button */
+.back-button {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  background-color: #555;
   color: white;
   cursor: pointer;
-  border: none;
+  transition: background-color 0.3s ease;
+  z-index: 2;
+  font-size: 1em;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
 }
 
-#search-section button:hover {
-  background-color: #0056b3;
+.back-button:hover {
+  background-color: #333;
 }
