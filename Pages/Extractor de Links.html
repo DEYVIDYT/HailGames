@@ -1,0 +1,643 @@
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Extractor de Links - Internet Archive</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --background-color: #ecf0f1;
+            --text-color: #333;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', Arial, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid var(--secondary-color);
+            border-radius: 5px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .optional-range {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        button {
+            flex: 1;
+            padding: 0.75rem;
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 700;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: var(--primary-color);
+        }
+
+        button:disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
+        }
+
+        #result {
+            margin-top: 1.5rem;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            padding: 1rem;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        #result h3 {
+            margin-bottom: 0.5rem;
+            color: var(--primary-color);
+        }
+
+        #result a {
+            display: block;
+            word-wrap: break-word;
+            color: var(--secondary-color);
+            text-decoration: none;
+            padding: 0.25rem 0;
+            transition: color 0.3s ease;
+        }
+
+        #result a:hover {
+            color: var(--primary-color);
+            text-decoration: underline;
+        }
+
+        .error {
+            color: #e74c3c;
+            text-align: center;
+        }
+
+        .info {
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .progress-container {
+            width: 100%;
+            background-color: #f0f0f0;
+            border-radius: 5px;
+            margin-top: 1rem;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            width: 0;
+            height: 20px;
+            background-color: var(--secondary-color);
+            transition: width 0.5s ease;
+        }
+
+        .size-info {
+            margin-top: 1rem;
+            color: var(--primary-color);
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .file-format-selection {
+            margin-top: 1rem;
+            background-color: #f9f9f9;
+            padding: 1rem;
+            border-radius: 5px;
+        }
+
+        .file-format-selection h3 {
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+        }
+
+        .file-format-checkboxes {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 0.5rem;
+        }
+
+        .file-format-checkboxes label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+        }
+
+        .file-format-checkboxes input[type="checkbox"] {
+            width: auto;
+            margin-right: 0.5rem;
+        }
+
+        .link-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #f4f4f4;
+            margin-bottom: 0.5rem;
+            padding: 0.5rem;
+            border-radius: 5px;
+        }
+
+        .link-details {
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+            margin-right: 1rem;
+        }
+
+        .link-filename {
+            font-weight: bold;
+            color: var(--primary-color);
+            word-break: break-all;
+        }
+
+        .link-size {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .link-url {
+            color: var(--secondary-color);
+            text-decoration: none;
+            word-break: break-all;
+            max-width: 200px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .link-copy-btn {
+            background-color: #2ecc71;
+            color: white;
+            border: none;
+            padding: 0.25rem 0.5rem;
+            border-radius: 3px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .link-copy-btn:hover {
+            background-color: #27ae60;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                margin: 1rem;
+                padding: 1rem;
+            }
+            .button-group {
+                flex-direction: column;
+            }
+            .optional-range {
+                flex-direction: column;
+            }
+        }
+
+        /* New styles for download format modal */
+        .download-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .download-modal-content {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .download-modal-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .download-modal-buttons button {
+            flex: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Extractor de Links - Internet Archive</h2>
+        
+        <div class="input-group">
+            <input type="text" id="archiveUrl" placeholder="Cole a URL do Internet Archive">
+            <input type="number" id="linkCount" placeholder="Quantos links deseja?" min="1">
+            <div class="optional-range">
+                <input type="number" id="startLink" placeholder="Início (opcional)" min="1">
+                <input type="number" id="endLink" placeholder="Fim (opcional)" min="1">
+            </div>
+        </div>
+        
+        <div id="fileFormatSelection" class="file-format-selection" style="display: none;">
+            <h3>Selecione os formatos de arquivo</h3>
+            <div id="fileFormatCheckboxes" class="file-format-checkboxes">
+                <!-- File formats will be dynamically inserted here -->
+            </div>
+        </div>
+        
+        <div class="button-group">
+            <button onclick="fetchLinks()">Obter Links</button>
+            <button id="downloadButton" onclick="downloadLinks()" disabled>Baixar Links</button>
+        </div>
+
+        <div class="progress-container">
+            <div id="progressBar" class="progress-bar"></div>
+        </div>
+
+        <div id="totalFiles" class="info"></div>
+        <div id="progressStatus" class="info"></div>
+
+        <div id="sizeInfo" class="size-info"></div>
+
+        <div id="result"></div>
+    </div>
+
+    <!-- New Download Format Modal -->
+    <div id="downloadFormatModal" class="download-modal">
+        <div class="download-modal-content">
+            <h3>Escolha o Formato de Download</h3>
+            <p>Selecione como deseja baixar os links:</p>
+            <div class="download-modal-buttons">
+                <button onclick="downloadLinksInFormat('txt')">Texto Simples</button>
+                <button onclick="downloadLinksInFormat('json')">Formato JSON</button>
+            </div>
+            <p style="margin-top: 1rem; font-size: 0.9rem; color: #666;">
+                Texto Simples: um link por linha<br>
+                JSON: inclui nome, tamanho e link
+            </p>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            let globalLinks = [];
+            let globalFileSizes = [];
+            let availableFileFormats = new Set();
+            const urlInput = document.getElementById("archiveUrl");
+            const totalFilesDiv = document.getElementById("totalFiles");
+            const fileFormatSelection = document.getElementById("fileFormatSelection");
+            const fileFormatCheckboxes = document.getElementById("fileFormatCheckboxes");
+
+            // Expose fetchLinks globally
+            window.fetchLinks = async function() {
+                const urlInput = document.getElementById("archiveUrl");
+                const countInput = document.getElementById("linkCount");
+                const startLinkInput = document.getElementById("startLink");
+                const endLinkInput = document.getElementById("endLink");
+                const resultDiv = document.getElementById("result");
+                const totalFilesDiv = document.getElementById("totalFiles");
+                const progressBar = document.getElementById("progressBar");
+                const progressStatus = document.getElementById("progressStatus");
+                const downloadButton = document.getElementById("downloadButton");
+                const sizeInfoDiv = document.getElementById("sizeInfo");
+
+                const url = urlInput.value.trim();
+                const count = parseInt(countInput.value);
+                const startLink = startLinkInput.value ? parseInt(startLinkInput.value) - 1 : 0;
+                const endLink = endLinkInput.value ? parseInt(endLinkInput.value) : null;
+
+                // Reset UI
+                resultDiv.innerHTML = "";
+                totalFilesDiv.innerHTML = "";
+                progressStatus.innerHTML = "";
+                sizeInfoDiv.innerHTML = "";
+                progressBar.style.width = "0%";
+                downloadButton.disabled = true;
+                globalLinks = [];
+                globalFileSizes = [];
+
+                // Validate input
+                if (!url.startsWith("https://archive.org/download/") || isNaN(count) || count < 1) {
+                    resultDiv.innerHTML = "<p class='error'>URL inválida ou número inválido.</p>";
+                    return;
+                }
+
+                const parts = url.split("/");
+                const identifier = parts[parts.length - 1];
+                const apiUrl = `https://archive.org/metadata/${identifier}`;
+
+                try {
+                    // Start progress
+                    progressStatus.innerHTML = "Conectando ao Internet Archive...";
+                    progressBar.style.width = "10%";
+
+                    const response = await fetch(apiUrl);
+                    const data = await response.json();
+
+                    // Update progress
+                    progressStatus.innerHTML = "Processando metadados...";
+                    progressBar.style.width = "30%";
+
+                    if (!data || !data.files) {
+                        resultDiv.innerHTML = "<p class='error'>Nenhum arquivo encontrado.</p>";
+                        progressBar.style.width = "0%";
+                        progressStatus.innerHTML = "";
+                        return;
+                    }
+
+                    const baseUrl = `https://archive.org/download/${identifier}/`;
+
+                    // Get selected file formats
+                    const selectedFormats = Array.from(
+                        document.querySelectorAll('input[name="fileFormat"]:checked')
+                    ).map(checkbox => checkbox.value.toLowerCase());
+
+                    let files = data.files
+                        .map(f => ({
+                            url: baseUrl + encodeURIComponent(f.name),
+                            size: parseInt(f.size) || 0,
+                            extension: f.name.split('.').pop().toLowerCase()
+                        }));
+
+                    // Organize files by extension
+                    let filesByFormat = {};
+                    if (selectedFormats.length > 0) {
+                        selectedFormats.forEach(format => {
+                            filesByFormat[format] = files.filter(f => f.extension === format);
+                        });
+                    } else {
+                        // If no formats selected, use all files
+                        filesByFormat['all'] = files;
+                    }
+
+                    // Distribute links evenly across selected formats
+                    let distributedLinks = [];
+                    if (selectedFormats.length > 0) {
+                        const linksPerFormat = Math.floor(count / selectedFormats.length);
+                        const remainingLinks = count % selectedFormats.length;
+
+                        selectedFormats.forEach((format, index) => {
+                            const formatFiles = filesByFormat[format];
+                            const formatLinksCount = index < remainingLinks 
+                                ? linksPerFormat + 1 
+                                : linksPerFormat;
+
+                            const formatLinks = formatFiles
+                                .slice(startLink, endLink || formatFiles.length)
+                                .slice(0, formatLinksCount);
+
+                            distributedLinks.push(...formatLinks);
+                        });
+                    } else {
+                        // If no formats selected, just take first 'count' links
+                        distributedLinks = files
+                            .slice(startLink, endLink || files.length)
+                            .slice(0, count);
+                    }
+
+                    totalFilesDiv.innerHTML = `Total de arquivos disponíveis ${selectedFormats.length > 0 ? `(filtrados por ${selectedFormats.join(', ')})` : ''}: ${files.length}`;
+
+                    // Update progress
+                    progressStatus.innerHTML = "Preparando links...";
+                    progressBar.style.width = "50%";
+
+                    if (distributedLinks.length === 0) {
+                        resultDiv.innerHTML = "<p class='error'>Nenhum link de download encontrado.</p>";
+                        progressBar.style.width = "0%";
+                        progressStatus.innerHTML = "";
+                        return;
+                    }
+
+                    globalLinks = distributedLinks.map(link => link.url);
+                    globalFileSizes = distributedLinks.map(link => link.size);
+
+                    // Calculate total size
+                    const totalSize = globalFileSizes.reduce((sum, size) => sum + size, 0);
+                    const formattedSize = formatFileSize(totalSize);
+
+                    // Finalize progress
+                    progressStatus.innerHTML = `Obtendo ${distributedLinks.length} links...`;
+                    progressBar.style.width = "80%";
+
+                    // Render links
+                    resultDiv.innerHTML = `<h3>Links encontrados (${distributedLinks.length}):</h3>`;
+                    distributedLinks.forEach((link) => {
+                        const filename = decodeURIComponent(link.url.split('/').pop());
+                        resultDiv.innerHTML += `
+                            <div class="link-item">
+                                <div class="link-details">
+                                    <div class="link-filename">${filename}</div>
+                                    <div class="link-size">${formatFileSize(link.size)}</div>
+                                    <a href="${link.url}" target="_blank" class="link-url">${link.url}</a>
+                                </div>
+                                <button class="link-copy-btn" onclick="copyToClipboard('${link.url}')">Copiar</button>
+                            </div>`;
+                    });
+
+                    // Display total size
+                    sizeInfoDiv.innerHTML = `Tamanho total dos arquivos: ${formattedSize}`;
+
+                    // Complete progress
+                    progressBar.style.width = "100%";
+                    progressStatus.innerHTML = "Concluído!";
+                    
+                    // Enable download button
+                    downloadButton.disabled = false;
+
+                    // Reset progress after a short delay
+                    setTimeout(() => {
+                        progressBar.style.width = "0%";
+                        progressStatus.innerHTML = "";
+                    }, 2000);
+
+                } catch (error) {
+                    resultDiv.innerHTML = "<p class='error'>Erro ao buscar os links.</p>";
+                    progressBar.style.width = "0%";
+                    progressStatus.innerHTML = "";
+                    console.error(error);
+                }
+            };
+
+            // Check files when URL is entered
+            urlInput.addEventListener('input', async function() {
+                const url = this.value.trim();
+                
+                // Reset UI
+                totalFilesDiv.innerHTML = "";
+                fileFormatSelection.style.display = "none";
+                fileFormatCheckboxes.innerHTML = "";
+                availableFileFormats.clear();
+
+                // Validate URL format
+                if (!url.startsWith("https://archive.org/download/")) {
+                    return;
+                }
+
+                try {
+                    const parts = url.split("/");
+                    const identifier = parts[parts.length - 1];
+                    const apiUrl = `https://archive.org/metadata/${identifier}`;
+
+                    const response = await fetch(apiUrl);
+                    const data = await response.json();
+
+                    if (data && data.files) {
+                        const totalFiles = data.files.length;
+                        totalFilesDiv.innerHTML = `Total de arquivos disponíveis: ${totalFiles}`;
+
+                        // Extract unique file formats
+                        data.files.forEach(file => {
+                            const extension = file.name.split('.').pop().toLowerCase();
+                            if (extension) {
+                                availableFileFormats.add(extension);
+                            }
+                        });
+
+                        // Populate file format checkboxes
+                        if (availableFileFormats.size > 0) {
+                            fileFormatSelection.style.display = "block";
+                            Array.from(availableFileFormats)
+                                .sort()
+                                .forEach(format => {
+                                    const checkbox = document.createElement('label');
+                                    checkbox.innerHTML = `
+                                        <input type="checkbox" name="fileFormat" value="${format}">
+                                        .${format}
+                                    `;
+                                    fileFormatCheckboxes.appendChild(checkbox);
+                                });
+                        }
+                    } else {
+                        totalFilesDiv.innerHTML = "Nenhum arquivo encontrado.";
+                    }
+                } catch (error) {
+                    totalFilesDiv.innerHTML = "Erro ao verificar arquivos.";
+                    console.error(error);
+                }
+            });
+
+            function formatFileSize(bytes) {
+                if (bytes === 0) return '0 Bytes';
+                const k = 1024;
+                const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+                const i = Math.floor(Math.log(bytes) / Math.log(k));
+                return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+            }
+
+            window.copyToClipboard = function(text) {
+                navigator.clipboard.writeText(text).then(() => {
+                    alert('Link copiado!');
+                }).catch(err => {
+                    console.error('Erro ao copiar link: ', err);
+                });
+            };
+
+            // Modify the existing downloadLinks function
+            function downloadLinks() {
+                if (globalLinks.length === 0) {
+                    alert("Não há links para baixar. Primeiro obtenha os links.");
+                    return;
+                }
+
+                // Show download format modal
+                const downloadModal = document.getElementById('downloadFormatModal');
+                downloadModal.style.display = 'flex';
+            }
+
+            // New function to handle different download formats
+            window.downloadLinksInFormat = function(format) {
+                const downloadModal = document.getElementById('downloadFormatModal');
+                downloadModal.style.display = 'none';
+
+                if (format === 'txt') {
+                    // Simple text format (just links)
+                    const linksText = globalLinks.join('\n');
+                    const blob = new Blob([linksText], {type: 'text/plain'});
+                    const a = document.createElement('a');
+                    a.href = URL.createObjectURL(blob);
+                    a.download = 'archive_links.txt';
+                    a.click();
+                } else if (format === 'json') {
+                    // Detailed JSON format
+                    const linksData = globalLinks.map((link, index) => ({
+                        filename: decodeURIComponent(link.split('/').pop()),
+                        size: formatFileSize(globalFileSizes[index]),
+                        url: link
+                    }));
+
+                    const jsonText = JSON.stringify(linksData, null, 2);
+                    const blob = new Blob([jsonText], {type: 'application/json'});
+                    const a = document.createElement('a');
+                    a.href = URL.createObjectURL(blob);
+                    a.download = 'archive_links.json';
+                    a.click();
+                }
+            };
+
+            // Expose functions globally
+            window.downloadLinks = downloadLinks;
+        })();
+    </script>
+</body>
+</html>
