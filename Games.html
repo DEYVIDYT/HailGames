@@ -1,0 +1,546 @@
+<html lang="pt">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hailgames Community</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #121212;
+      color: #f0f0f0;
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      overflow-x: hidden;
+    }
+
+    .container {
+      width: 95%;
+      max-width: 1200px;
+      margin: auto;
+      padding: 20px;
+    }
+
+    h2 {
+      color: #4CAF50;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .tab {
+      display: none;
+    }
+
+    .active {
+      display: block;
+    }
+
+    /* Bottom Navigation */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      display: flex;
+      justify-content: space-around;
+      background: #1e1e1e;
+      padding: 10px 0;
+      box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.3);
+    }
+
+    .nav-item {
+      cursor: pointer;
+      padding: 10px 15px;
+      color: #ddd;
+      border-radius: 5px;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    .nav-item:hover {
+      background-color: #333;
+      color: white;
+    }
+
+    /* Form Styles */
+    input[type="text"],
+    input[type="file"],
+    button {
+      display: block;
+      width: calc(100% - 20px);
+      padding: 10px;
+      margin: 10px auto;
+      border: 1px solid #333;
+      background: #222;
+      color: white;
+      border-radius: 5px;
+      transition: background-color 0.3s;
+      box-sizing: border-box;
+    }
+
+    input[type="file"] {
+      padding: 5px;
+    }
+
+    button {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    #progressContainer {
+      width: 100%;
+      background: #333;
+      border-radius: 5px;
+      display: none;
+      margin-top: 10px;
+      overflow: hidden;
+    }
+
+    #progressBar {
+      width: 0%;
+      height: 20px;
+      background: #4CAF50;
+      text-align: center;
+      color: white;
+      line-height: 20px;
+      border-radius: 5px;
+      transition: width 0.3s ease-in-out;
+    }
+
+    /* Game List Styles */
+    #games {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      list-style-type: none;
+      padding: 0;
+    }
+
+    .game-card {
+      background-color: #1e1e1e;
+      border-radius: 10px;
+      padding: 15px;
+      text-align: center;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+      transition: transform 0.3s;
+      cursor: pointer;
+    }
+
+    .game-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .game-card img {
+      width: 100%;
+      border-radius: 10px;
+      height: auto;
+      margin-bottom: 10px;
+    }
+
+    .game-card h3 {
+      margin: 10px 0;
+      font-size: 1.2em;
+      color: #ddd;
+    }
+
+    /* Spinner */
+    .spinner {
+      border: 5px solid #f3f3f3;
+      border-top: 5px solid #4CAF50;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      animation: spin 1s linear infinite;
+      margin: 20px auto;
+      display: none;
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    /* Modal Styles */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.7);
+      z-index: 1;
+      overflow-y: auto;
+    }
+
+    .modal-content {
+      position: relative;
+      background-color: #2a2a2a;
+      margin: 5% auto;
+      padding: 20px;
+      border-radius: 10px;
+      width: 80%;
+      max-width: 800px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+    }
+
+    .close-button {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      color: #bbb;
+      font-size: 24px;
+      cursor: pointer;
+    }
+
+    .modal-content h2 {
+      color: #4CAF50;
+      text-align: left;
+      margin-bottom: 10px;
+    }
+
+    .modal-content img {
+      width: 100%;
+      border-radius: 10px;
+      margin-bottom: 15px;
+    }
+
+    .modal-content p {
+      line-height: 1.6;
+      margin-bottom: 15px;
+    }
+
+    .modal-content .screenshots {
+      display: flex;
+      overflow-x: auto;
+      margin-bottom: 15px;
+    }
+
+    .modal-content .screenshots img {
+      width: 200px;
+      height: auto;
+      margin-right: 10px;
+      border-radius: 5px;
+    }
+
+    .modal-content .trailer {
+      position: relative;
+      padding-bottom: 56.25%;
+      /* 16:9 aspect ratio */
+      height: 0;
+      overflow: hidden;
+    }
+
+    .modal-content .trailer iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 600px) {
+      .container {
+        width: 100%;
+        padding: 10px;
+      }
+
+      .bottom-nav {
+        padding: 5px 0;
+      }
+
+      .nav-item {
+        padding: 8px 10px;
+        font-size: 0.9em;
+      }
+
+      .modal-content {
+        margin: 10% auto;
+        padding: 15px;
+      }
+
+      .modal-content .screenshots img {
+        width: 150px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div id="gameList" class="tab active">
+      <h2>Loja de Jogos</h2>
+      <div id="loadingSpinner" class="spinner"></div>
+      <ul id="games"></ul>
+    </div>
+    <div id="uploadSection" class="tab">
+      <h2>Enviar Jogo</h2>
+      <input type="text" id="gameTitle" placeholder="Nome do jogo">
+      <input type="text" id="youtubeTrailer" placeholder="URL do Trailer do YouTube">
+      <label for="gameFile">Arquivo do Jogo:</label>
+      <input type="file" id="gameFile" accept=".zip,.rar,.7z">
+      <label for="gameIcon">Capa do Jogo:</label>
+      <input type="file" id="gameIcon" accept="image/*">
+      <label for="screenshots">Screenshots:</label>
+      <input type="file" id="screenshots" multiple accept="image/*">
+      <button onclick="uploadGame()">Enviar Jogo</button>
+      <p id="status"></p>
+      <div id="progressContainer">
+        <div id="progressBar">0%</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bottom-nav">
+    <div class="nav-item" onclick="showTab('gameList')">Início</div>
+    <div class="nav-item" onclick="showTab('uploadSection')">Upload</div>
+  </div>
+
+  <!-- The Modal -->
+  <div id="gameModal" class="modal">
+    <div class="modal-content">
+      <span class="close-button" onclick="closeModal()">&times;</span>
+      <h2 id="modalTitle"></h2>
+      <img id="modalIcon" src="" alt="Game Icon">
+      <p id="modalDescription"></p>
+      <h3>Screenshots:</h3>
+      <div class="screenshots" id="modalScreenshots">
+        <!-- Screenshots will be loaded here -->
+      </div>
+      <h3>Trailer:</h3>
+      <div class="trailer" id="modalTrailer">
+        <!-- Trailer will be loaded here -->
+      </div>
+      <a id="modalGameFile" href="#" target="_blank">Baixar Jogo</a>
+    </div>
+  </div>
+
+  <script>
+    const accessKey = "fvV6fVJPRXJbCjXo";
+    const secretKey = "jHmT5W61l13WZko4";
+    let gamesData = []; // Store loaded game data
+
+    function showTab(tabId) {
+      document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+    }
+
+    function loadGames() {
+      const gamesContainer = document.getElementById('games');
+      const loadingSpinner = document.getElementById('loadingSpinner');
+      gamesContainer.innerHTML = '';
+      loadingSpinner.style.display = 'block';
+
+      fetch("https://s3.us.archive.org/Hailgames_Comunity/games.json")
+        .then(response => response.json())
+        .then(data => {
+          loadingSpinner.style.display = 'none';
+          gamesData = data; // Store the loaded games
+
+          if (Array.isArray(data) && data.length > 0) {
+            data.forEach(game => {
+              const li = document.createElement('li');
+              li.className = 'game-card';
+              li.onclick = () => openModal(game); // Attach onclick event
+
+              const img = document.createElement('img');
+              img.src = game.icon;
+              img.alt = game.name;
+
+              const title = document.createElement('h3');
+              title.textContent = game.name;
+
+              li.appendChild(img);
+              li.appendChild(title);
+              gamesContainer.appendChild(li);
+            });
+          } else {
+            const errorMsg = document.createElement('p');
+            errorMsg.textContent = 'Nenhum jogo encontrado.';
+            gamesContainer.appendChild(errorMsg);
+          }
+        })
+        .catch(error => {
+          console.error("Erro ao carregar jogos:", error);
+          loadingSpinner.style.display = 'none';
+          const errorMsg = document.createElement('p');
+          errorMsg.textContent = 'Erro ao carregar jogos.';
+          gamesContainer.appendChild(errorMsg);
+        });
+    }
+
+    window.onload = loadGames;
+
+    async function uploadGame() {
+      const gameTitle = document.getElementById('gameTitle').value;
+      const youtubeTrailer = document.getElementById('youtubeTrailer').value;
+      const gameFile = document.getElementById('gameFile').files[0];
+      const gameIcon = document.getElementById('gameIcon').files[0];
+      const screenshots = document.getElementById('screenshots').files;
+      const statusText = document.getElementById('status');
+      const progressBar = document.getElementById('progressBar');
+      const progressContainer = document.getElementById('progressContainer');
+
+      if (!gameTitle || !gameFile || !gameIcon) {
+        alert('Preencha todos os campos obrigatórios!');
+        return;
+      }
+
+      const collection = "Hailgames_Comunity";
+      const fileName = encodeURIComponent(gameFile.name);
+      const url = `https://s3.us.archive.org/${collection}/${fileName}`;
+      const xhr = new XMLHttpRequest();
+      xhr.open("PUT", url, true);
+      xhr.setRequestHeader("Authorization", "LOW " + accessKey + ":" + secretKey);
+      xhr.setRequestHeader("Content-Type", gameFile.type);
+      progressContainer.style.display = 'block';
+
+      xhr.upload.onprogress = function (event) {
+        if (event.lengthComputable) {
+          let percentComplete = (event.loaded / event.total) * 100;
+          progressBar.style.width = percentComplete + "%";
+          progressBar.innerText = Math.round(percentComplete) + "%";
+        }
+      };
+
+      xhr.onload = function () {
+        if (xhr.status === 200) {
+          statusText.innerText = "Upload concluído com sucesso!";
+
+          const gameData = {
+            name: gameTitle,
+            icon: `https://s3.us.archive.org/${collection}/${fileName}_icon.jpg`,
+            screenshots: Array.from(screenshots).map(file => `https://s3.us.archive.org/${collection}/${encodeURIComponent(file.name)}_screenshot.jpg`),
+            trailer: youtubeTrailer,
+            description: "Descrição do jogo",
+            gameFile: `https://s3.us.archive.org/${collection}/${fileName}`
+          };
+
+          const checkUrl = "https://s3.us.archive.org/Hailgames_Comunity/games.json";
+          fetch(checkUrl)
+            .then(response => {
+              if (response.status === 200) {
+                return response.json();
+              } else {
+                throw new Error("Arquivo não encontrado");
+              }
+            })
+            .then(existingData => {
+              existingData.push(gameData);
+              uploadGameList(existingData);
+            })
+            .catch(() => {
+              uploadGameList([gameData]);
+            });
+        } else {
+          statusText.innerText = "Erro ao enviar o arquivo.";
+        }
+      };
+
+      xhr.onerror = function () {
+        statusText.innerText = "Erro na conexão.";
+      };
+
+      xhr.send(gameFile);
+    }
+
+    function uploadGameList(games) {
+      const url = "https://s3.us.archive.org/Hailgames_Comunity/games.json";
+      const data = JSON.stringify(games);
+
+      const xhr = new XMLHttpRequest();
+      xhr.open("PUT", url, true);
+      xhr.setRequestHeader("Authorization", "LOW " + accessKey + ":" + secretKey);
+      xhr.setRequestHeader("Content-Type", "application/json");
+
+      xhr.onload = function () {
+        if (xhr.status === 200) {
+          console.log("Lista de jogos atualizada com sucesso!");
+        } else {
+          console.error("Erro ao atualizar a lista de jogos.");
+        }
+      };
+
+      xhr.onerror = function () {
+        console.error("Erro na conexão ao atualizar a lista de jogos.");
+      };
+
+      xhr.send(data);
+    }
+
+    // Modal functions
+    function openModal(game) {
+      const modal = document.getElementById("gameModal");
+      const modalTitle = document.getElementById("modalTitle");
+      const modalIcon = document.getElementById("modalIcon");
+      const modalDescription = document.getElementById("modalDescription");
+      const modalScreenshots = document.getElementById("modalScreenshots");
+      const modalTrailer = document.getElementById("modalTrailer");
+      const modalGameFile = document.getElementById("modalGameFile");
+
+      modalTitle.textContent = game.name;
+      modalIcon.src = game.icon;
+      modalIcon.alt = game.name;
+      modalDescription.textContent = game.description;
+
+      // Load screenshots
+      modalScreenshots.innerHTML = ''; // Clear existing screenshots
+      game.screenshots.forEach(screenshot => {
+        const img = document.createElement('img');
+        img.src = screenshot;
+        img.alt = "Screenshot of " + game.name;
+        modalScreenshots.appendChild(img);
+      });
+
+      // Load trailer
+      modalTrailer.innerHTML = ''; // Clear existing trailer
+      if (game.trailer) {
+        const videoId = extractVideoId(game.trailer);
+        const iframe = document.createElement('iframe');
+        iframe.src = `https://www.youtube.com/embed/${videoId}`;
+        iframe.allowFullscreen = true;
+        modalTrailer.appendChild(iframe);
+      }
+
+      modalGameFile.href = game.gameFile;
+      modalGameFile.textContent = "Baixar " + game.name;
+
+      modal.style.display = "block";
+    }
+
+    function closeModal() {
+      const modal = document.getElementById("gameModal");
+      modal.style.display = "none";
+    }
+
+    // Helper function to extract YouTube video ID from URL
+    function extractVideoId(url) {
+      const regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#\&\?]*).*/;
+      const match = url.match(regExp);
+      return (match && match[7].length == 11) ? match[7] : false;
+    }
+
+    // Close the modal if the user clicks outside of it
+    window.onclick = function (event) {
+      const modal = document.getElementById("gameModal");
+      if (event.target == modal) {
+        closeModal();
+      }
+    }
+  </script>
+</body>
+
+</html>
