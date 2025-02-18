@@ -1,0 +1,503 @@
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Config APS3E Editor</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 0;
+      background-color: #f4f4f4;
+      color: #333;
+      line-height: 1.6;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    #header {
+      background-color: #2c3e50;
+      color: white;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
+
+    #search-bar {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 20px;
+      padding: 0 20px;
+    }
+
+    #search-input {
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      width: 100%;
+      max-width: 600px;
+      box-sizing: border-box;
+      font-size: 16px;
+    }
+
+    #config-editor {
+      max-width: 900px;
+      margin: 20px auto;
+      padding: 20px;
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+      flex: 1;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+      color: #555;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    select {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      box-sizing: border-box;
+      font-size: 16px;
+      color: #333;
+    }
+
+    /* Slider Styles */
+    .slider-container {
+      display: flex;
+      align-items: center;
+    }
+
+    .slider {
+      width: 100%;
+      margin-right: 10px;
+    }
+
+    .slider-value {
+      width: 60px;
+      text-align: center;
+    }
+
+    button {
+      background-color: #5cb85c;
+      color: white;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #4cae4c;
+    }
+
+    #config-form h2 {
+      color: #2c3e50;
+      border-bottom: 2px solid #2c3e50;
+      padding-bottom: 5px;
+      margin-top: 20px;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    /* Footer Styles */
+    #footer {
+      background-color: #2c3e50;
+      color: white;
+      text-align: center;
+      padding: 10px;
+      margin-top: 20px;
+      box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Mobile Styles */
+    @media (max-width: 768px) {
+      #config-editor {
+        padding: 15px;
+        margin: 10px auto;
+      }
+
+      #search-bar {
+        padding: 0 10px;
+      }
+
+      #search-input {
+        width: 100%;
+      }
+
+      input[type="text"],
+      input[type="number"],
+      select {
+        font-size: 14px;
+        padding: 8px;
+        margin-bottom: 10px;
+      }
+
+      button {
+        font-size: 14px;
+        padding: 10px 15px;
+      }
+
+      .slider-container {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .slider {
+        margin-bottom: 10px;
+      }
+
+      .slider-value {
+        width: 100%;
+        text-align: center;
+      }
+    }
+
+    .sub-config-container {
+      margin-left: 20px;
+      border-left: 1px solid #eee;
+      padding-left: 10px;
+    }
+
+    #ia-credit {
+      text-align: center;
+      margin-top: 10px;
+    }
+
+    #ia-credit a {
+      color: #5cb85c;
+      text-decoration: none;
+    }
+
+    #ia-credit a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="header">
+    <h1 id="header-title">Config APS3E Editor</h1>
+    <p id="header-subtitle">Please import the config.yml file from /storage/emulated/0/aps3e/config/</p>
+  </div>
+
+  <div id="search-bar">
+    <input type="text" id="search-input" placeholder="Search settings...">
+  </div>
+
+  <div id="config-editor">
+    <input type="file" id="config-file" accept=".yml, .yaml">
+    <div id="config-form">
+      <!-- Config form will be generated here -->
+    </div>
+    <button id="save-config">Save Config</button>
+  </div>
+
+  <div id="ia-credit">
+    Criado com IA by: <a href="https://youtube.com/@hail-games?si=ttZmQZLPgWRIyXGG" target="_blank">@HailGames</a>
+  </div>
+
+  <div id="footer">
+    <p>&copy; 2024 Config APS3E Editor</p>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/4.1.0/js-yaml.min.js"></script>
+  <script>
+    const configFileInput = document.getElementById('config-file');
+    const configForm = document.getElementById('config-form');
+    const saveConfigButton = document.getElementById('save-config');
+    const searchInput = document.getElementById('search-input');
+    const headerTitle = document.getElementById('header-title');
+    const headerSubtitle = document.getElementById('header-subtitle');
+
+    let configData = {};
+    let formElements = [];
+
+    // Function to set the language based on user's location
+    function setLanguage() {
+      const lang = navigator.language || navigator.userLanguage;
+
+      if (lang.includes('pt')) {
+        headerTitle.textContent = 'Config APS3E Editor';
+        headerSubtitle.textContent = 'Por favor, importe o arquivo config.yml da pasta /storage/emulated/0/aps3e/config/';
+      } else {
+        headerTitle.textContent = 'Config APS3E Editor';
+        headerSubtitle.textContent = 'Please import the config.yml file from /storage/emulated/0/aps3e/config/';
+      }
+    }
+
+    // Call setLanguage when the page loads
+    setLanguage();
+
+    configFileInput.addEventListener('change', function (event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          const yamlText = e.target.result;
+          try {
+            configData = jsyaml.load(yamlText);
+            generateForm(configData);
+          } catch (error) {
+            alert('Error parsing YAML file: ' + error);
+          }
+        };
+        reader.readAsText(file);
+      }
+    });
+
+    function generateForm(data) {
+      configForm.innerHTML = '';
+      formElements = [];
+
+      for (const section in data) {
+        if (data.hasOwnProperty(section)) {
+          const sectionElement = document.createElement('div');
+          sectionElement.innerHTML = `<h2>${section}</h2>`;
+          configForm.appendChild(sectionElement);
+
+          const sectionData = data[section];
+          for (const key in sectionData) {
+            if (sectionData.hasOwnProperty(key)) {
+              const value = sectionData[key];
+              const formGroup = createFormElement(section, key, value, section);
+              configForm.appendChild(formGroup);
+              formElements.push({
+                element: formGroup,
+                section: section,
+                key: key,
+              });
+            }
+          }
+        }
+      }
+    }
+
+    function createFormElement(section, key, value, sectionName) {
+      const formGroup = document.createElement('div');
+      formGroup.classList.add('form-group');
+
+      const label = document.createElement('label');
+      label.textContent = `${key}:`;
+      formGroup.appendChild(label);
+
+      let input;
+
+      if (sectionName === 'Core' && key === 'PPU Decoder') {
+        input = document.createElement('select');
+        const recompilerOption = document.createElement('option');
+        recompilerOption.value = 'Recompiler (LLVM)';
+        recompilerOption.textContent = 'Recompiler (LLVM)';
+        input.appendChild(recompilerOption);
+
+        const interpreterOption = document.createElement('option');
+        interpreterOption.value = 'Interpreter (static)';
+        interpreterOption.textContent = 'Interpreter (static)';
+        input.appendChild(interpreterOption);
+        input.value = value;
+      } else if (sectionName === 'Video' && key === 'Renderer') {
+        input = document.createElement('select');
+        const openglOption = document.createElement('option');
+        openglOption.value = 'OpenGL';
+        openglOption.textContent = 'OpenGL';
+        input.appendChild(openglOption);
+
+        const vulkanOption = document.createElement('option');
+        vulkanOption.value = 'Vulkan';
+        vulkanOption.textContent = 'Vulkan';
+        input.appendChild(vulkanOption);
+        input.value = value;
+      } else if (sectionName === 'Video' && key === 'Resolution Scale') {
+        const sliderContainer = document.createElement('div');
+        sliderContainer.classList.add('slider-container');
+
+        input = document.createElement('input');
+        input.type = 'range';
+        input.min = '50';
+        input.max = '150';
+        input.value = value;
+        input.classList.add('slider');
+        input.dataset.section = sectionName;
+        input.dataset.key = key;
+
+        const sliderValue = document.createElement('span');
+        sliderValue.classList.add('slider-value');
+        sliderValue.textContent = getResolutionText(value);
+
+        input.addEventListener('input', function () {
+          sliderValue.textContent = getResolutionText(this.value);
+          setDeepValue(configData, 'Video.Resolution Scale', parseInt(this.value));
+        });
+
+        sliderContainer.appendChild(input);
+        sliderContainer.appendChild(sliderValue);
+        input = sliderContainer; // Override input with the slider container
+      } else if (typeof value === 'boolean') {
+        input = document.createElement('select');
+        const trueOption = document.createElement('option');
+        trueOption.value = 'true';
+        trueOption.textContent = 'True';
+        input.appendChild(trueOption);
+
+        const falseOption = document.createElement('option');
+        falseOption.value = 'false';
+        falseOption.textContent = 'False';
+        input.appendChild(falseOption);
+        input.value = value.toString();
+      } else if (typeof value === 'object' && value !== null) {
+        // Handle sub-configurations like Performance Overlay, Vulkan, etc.
+        const subConfigContainer = document.createElement('div');
+        subConfigContainer.classList.add('sub-config-container');
+
+        for (const subKey in value) {
+          if (value.hasOwnProperty(subKey)) {
+            const subValue = value[subKey];
+            const subFormGroup = createFormElement(section + '.' + key, subKey, subValue, sectionName);
+            subConfigContainer.appendChild(subFormGroup);
+          }
+        }
+        input = subConfigContainer;
+      }
+      else if (typeof value === 'number') {
+        input = document.createElement('input');
+        input.type = 'number';
+        input.value = value;
+      } else {
+        input = document.createElement('input');
+        input.type = 'text';
+        input.value = value;
+      }
+
+      input.dataset.section = sectionName;
+      input.dataset.key = key;
+      formGroup.appendChild(input);
+
+      return formGroup;
+    }
+
+    function getResolutionText(value) {
+      if (value == 50) {
+        return '360p';
+      } else if (value >= 51 && value <= 99) {
+        return '480p';
+      } else if (value == 100) {
+        return '720p';
+      } else if (value >= 101 && value <= 149) {
+        return '900p';
+      } else if (value == 150) {
+        return '1080p';
+      } else {
+        return 'Other';
+      }
+    }
+
+    // Function to set a deeply nested value in an object
+    function setDeepValue(obj, path, value) {
+      const pathParts = path.split('.');
+      let current = obj;
+
+      for (let i = 0; i < pathParts.length - 1; i++) {
+        const part = pathParts[i];
+        if (!current[part]) {
+          current[part] = {};
+        }
+        current = current[part];
+      }
+
+      current[pathParts[pathParts.length - 1]] = value;
+    }
+
+    // Function to get a deeply nested value from an object
+    function getDeepValue(obj, path) {
+      const pathParts = path.split('.');
+      let current = obj;
+
+      for (let i = 0; i < pathParts.length; i++) {
+        const part = pathParts[i];
+        if (!current || typeof current !== 'object' || !current.hasOwnProperty(part)) {
+          return undefined;
+        }
+        current = current[part];
+      }
+
+      return current;
+    }
+
+    saveConfigButton.addEventListener('click', function () {
+      const inputFields = configForm.querySelectorAll('input, select');
+
+      inputFields.forEach(input => {
+        let section = input.dataset.section;
+        const key = input.dataset.key;
+        let value;
+
+        if (input.tagName === 'SELECT') {
+          if (input.value === 'true' || input.value === 'false') {
+            value = input.value === 'true';
+          } else {
+            value = input.value;
+          }
+        } else if (input.type === 'number') {
+          value = Number(input.value);
+        } else if (input.type === 'range') {
+          value = parseInt(input.value);
+        } else {
+          value = input.value;
+        }
+
+        // Update the configData using setDeepValue function
+        setDeepValue(configData, `${section}.${key}`, value);
+      });
+
+      const yamlString = jsyaml.dump(configData);
+
+      download('config.yml', yamlString);
+    });
+
+    function download(filename, text) {
+      const element = document.createElement('a');
+      element.setAttribute('href', 'data:text/yaml;charset=utf-8,' + encodeURIComponent(text));
+      element.setAttribute('download', filename);
+
+      element.style.display = 'none';
+      document.body.appendChild(element);
+
+      element.click();
+
+      document.body.removeChild(element);
+    }
+
+    searchInput.addEventListener('input', function () {
+      const searchTerm = searchInput.value.toLowerCase();
+
+      formElements.forEach(item => {
+        const element = item.element;
+        const section = item.section;
+        const key = item.key;
+        // Use getDeepValue to safely access nested values
+        const value = getDeepValue(configData, `${section}.${key}`);
+
+        const elementText = `${section} ${key} ${value}`.toLowerCase();
+        if (elementText.includes(searchTerm)) {
+          element.style.display = '';
+        } else {
+          element.style.display = 'none';
+        }
+      });
+    });
+  </script>
+</body>
+
+</html>
