@@ -1,0 +1,731 @@
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HailGames | PIX</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script type="importmap">
+        {
+            "imports": {
+                "confetti": "https://cdn.skypack.dev/canvas-confetti"
+            }
+        }
+    </script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #8c43ff;
+            --secondary-color: #6429c8;
+            --text-color: #333;
+            --light-gray: #f5f5f5;
+            --gray: #ddd;
+            --dark-gray: #888;
+            --success: #4caf50;
+            --radius: 12px;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+            --bg-gradient: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            --card-bg: rgba(255, 255, 255, 0.9);
+            --highlight-bg: rgba(240, 231, 255, 0.9);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--text-color);
+            background: var(--bg-gradient);
+            line-height: 1.6;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(140, 67, 255, 0.2) 0%, transparent 40%),
+                radial-gradient(circle at 80% 20%, rgba(100, 41, 200, 0.2) 0%, transparent 35%),
+                radial-gradient(circle at 40% 80%, rgba(76, 175, 80, 0.2) 0%, transparent 30%);
+            z-index: -1;
+        }
+        
+        .game-particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            overflow: hidden;
+        }
+        
+        .particle {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: rgba(140, 67, 255, 0.6);
+            border-radius: 50%;
+            animation: float 15s infinite linear;
+        }
+        
+        .particle:nth-child(2n) {
+            background: rgba(100, 41, 200, 0.6);
+            width: 6px;
+            height: 6px;
+        }
+        
+        .particle:nth-child(3n) {
+            background: rgba(76, 175, 80, 0.6);
+            width: 10px;
+            height: 10px;
+        }
+        
+        .particle:nth-child(4n) {
+            background: rgba(255, 255, 255, 0.5);
+            width: 4px;
+            height: 4px;
+        }
+        
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) translateX(0) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100vh) translateX(calc(sin(var(--angle, 0deg)) * 100px)) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        header {
+            margin-bottom: 30px;
+        }
+
+        .profile {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .profile-image {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            overflow: hidden;
+            margin-bottom: 15px;
+            border: 3px solid var(--primary-color);
+            padding: 3px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .profile-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        h1 {
+            font-size: 24px;
+            margin-bottom: 8px;
+            color: var(--primary-color);
+        }
+
+        .creator-description {
+            color: var(--dark-gray);
+            margin-bottom: 15px;
+        }
+
+        main {
+            display: grid;
+            gap: 30px;
+        }
+
+        .donation-container {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 25px;
+            box-shadow: var(--shadow);
+        }
+
+        h2 {
+            font-size: 20px;
+            margin-bottom: 20px;
+            color: var(--primary-color);
+        }
+
+        .donation-options {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .donation-btn {
+            background: var(--light-gray);
+            border: 2px solid var(--gray);
+            border-radius: var(--radius);
+            padding: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .donation-btn:hover {
+            border-color: var(--primary-color);
+        }
+
+        .donation-btn.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .custom-value-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .custom-value-container.hidden {
+            display: none;
+        }
+
+        .input-group {
+            display: flex;
+            align-items: center;
+            border: 2px solid var(--gray);
+            border-radius: var(--radius);
+            overflow: hidden;
+            flex: 1;
+        }
+
+        .currency {
+            background: var(--light-gray);
+            padding: 10px;
+            font-weight: bold;
+        }
+
+        input[type="number"] {
+            border: none;
+            padding: 10px;
+            flex: 1;
+            font-size: 16px;
+            outline: none;
+        }
+
+        .confirm-custom-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: var(--radius);
+            padding: 0 15px;
+            cursor: pointer;
+        }
+
+        .donation-message {
+            margin-bottom: 20px;
+        }
+
+        .donation-message h3 {
+            font-size: 16px;
+            margin-bottom: 10px;
+            color: var(--text-color);
+        }
+
+        textarea {
+            width: 100%;
+            height: 100px;
+            padding: 12px;
+            border: 2px solid var(--gray);
+            border-radius: var(--radius);
+            resize: none;
+            font-family: inherit;
+            outline: none;
+            transition: var(--transition);
+        }
+
+        textarea:focus {
+            border-color: var(--primary-color);
+        }
+
+        .donate-now-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: var(--radius);
+            padding: 15px;
+            font-size: 18px;
+            font-weight: bold;
+            width: 100%;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .donate-now-btn:hover:not(:disabled) {
+            background: var(--secondary-color);
+        }
+
+        .donate-now-btn:disabled {
+            background: var(--gray);
+            cursor: not-allowed;
+        }
+
+        .recent-donations {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 25px;
+            box-shadow: var(--shadow);
+        }
+
+        .donations-list {
+            list-style: none;
+        }
+
+        .donation-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid var(--gray);
+        }
+
+        .donation-item:last-child {
+            border-bottom: none;
+        }
+
+        .donor-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .donor-avatar {
+            width: 40px;
+            height: 40px;
+            background: var(--light-gray);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--dark-gray);
+            font-weight: bold;
+        }
+
+        .donor-name {
+            font-weight: bold;
+        }
+
+        .donation-time {
+            font-size: 12px;
+            color: var(--dark-gray);
+        }
+
+        .donation-amount {
+            font-weight: bold;
+            color: var(--success);
+        }
+
+        .donation-modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            border-radius: var(--radius);
+            padding: 30px;
+            width: 90%;
+            max-width: 500px;
+            z-index: 1001;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-content {
+            position: relative;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: -15px;
+            right: -15px;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .donation-modal h2 {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .donation-summary {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: var(--light-gray);
+            border-radius: var(--radius);
+        }
+
+        .donation-summary p {
+            margin-bottom: 10px;
+        }
+
+        .donation-thank-you {
+            text-align: center;
+            margin-bottom: 20px;
+            font-style: italic;
+        }
+
+        .close-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: var(--radius);
+            padding: 12px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .pix-container {
+            background: var(--highlight-bg);
+            border-radius: var(--radius);
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .pix-code {
+            background: white;
+            border: 2px dashed var(--primary-color);
+            border-radius: var(--radius);
+            padding: 15px;
+            margin-bottom: 20px;
+            word-break: break-all;
+            font-size: 18px;
+            color: var(--text-color);
+        }
+
+        .copy-pix-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: var(--radius);
+            padding: 12px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin: 0 auto;
+        }
+
+        .copy-pix-btn:hover {
+            background: var(--secondary-color);
+        }
+
+        .pix-copy-modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            border-radius: var(--radius);
+            padding: 30px;
+            width: 90%;
+            max-width: 500px;
+            z-index: 1001;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .copy-message {
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .about-content {
+            padding: 10px;
+            line-height: 1.6;
+        }
+
+        .whatsapp-btn {
+            background: #25D366;
+            color: white;
+            border: none;
+            border-radius: var(--radius);
+            padding: 12px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin: 15px auto 0;
+            width: 100%;
+        }
+
+        .whatsapp-btn:hover {
+            background: #128C7E;
+        }
+
+        @media (max-width: 600px) {
+            .donation-options {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .custom-value-container {
+                flex-direction: column;
+            }
+            
+            .donation-modal {
+                width: 95%;
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-particles">
+        <!-- Particles will be injected via JS -->
+    </div>
+
+    <div class="container">
+        <header>
+            <div class="profile">
+                <div class="profile-image">
+                    <img src="https://yt3.googleusercontent.com/HjIsp9RYyQ67jTt8mvkjUvPllGfyVs6HlvHLLF-_scdHzV8Hn1ROv_5X7Itcu7kPXYt8XxYR2g=s160-c-k-c0x00ffffff-no-rj" alt="HailGames">
+                </div>
+                <h1 id="creator-name">HailGames</h1>
+                <p class="creator-description">Apoie meu trabalho através do PIX!</p>
+            </div>
+        </header>
+
+        <main>
+            <section class="donation-container">
+                <h2>Faça um PIX</h2>
+                
+                <div class="pix-container">
+                    <div class="pix-code">
+                        <p id="pix-key">Carregando chave PIX...</p>
+                    </div>
+                    <button id="copy-pix-btn" class="copy-pix-btn">
+                        <i class="fas fa-copy"></i> Copiar chave PIX
+                    </button>
+                </div>
+                <button id="whatsapp-btn" class="whatsapp-btn hidden">
+                    <i class="fab fa-whatsapp"></i> Entrar no Grupo do WhatsApp
+                </button>
+            </section>
+
+            <section class="recent-donations">
+                <h2>Sobre</h2>
+                <div class="about-content">
+                    <p id="about-text"></p>
+                </div>
+            </section>
+        </main>
+
+        <div class="pix-copy-modal hidden">
+            <div class="modal-content">
+                <span class="close-modal">&times;</span>
+                <h2>Chave PIX copiada!</h2>
+                <p class="copy-message">Agora é só colar a chave no seu aplicativo bancário para realizar o PIX.</p>
+                <button class="close-btn">Fechar</button>
+            </div>
+        </div>
+
+        <div class="overlay hidden"></div>
+    </div>
+
+    <script type="module">
+        import confetti from 'confetti';
+
+        // Configurações personalizáveis
+        const config = {
+            // Informações do criador
+            creatorName: "HailGames",
+            creatorDescription: "Apoie meu trabalho através do PIX!",
+            
+            // URL para buscar a chave PIX e link do grupo
+            apiUrl: "https://ldgames.x10.mx/pix.json",
+            
+            // Valores padrão (serão substituídos pelos dados da API)
+            pixKey: "",
+            whatsappLink: "",
+            
+            // Sobre
+            aboutText: "Canal focado em Gameplay de jogos em Emuladores como Winlator, Gamefusion no snapdragon 695"
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Criar partículas de fundo
+            createGameParticles();
+
+            // Buscar dados da API
+            fetchPixData();
+            
+            // Configurar informações do criador
+            document.getElementById('creator-name').textContent = config.creatorName;
+            document.querySelector('.creator-description').textContent = config.creatorDescription;
+            document.getElementById('about-text').textContent = config.aboutText;
+            
+            // Variáveis
+            const copyPixBtn = document.getElementById('copy-pix-btn');
+            const pixCopyModal = document.querySelector('.pix-copy-modal');
+            const overlay = document.querySelector('.overlay');
+            const closeModalButtons = document.querySelectorAll('.close-modal, .close-btn');
+            const whatsappButton = document.getElementById('whatsapp-btn');
+
+            // Event Listeners
+            if (closeModalButtons) {
+                closeModalButtons.forEach(button => {
+                    button.addEventListener('click', closeModal);
+                });
+            }
+            
+            if (overlay) {
+                overlay.addEventListener('click', closeModal);
+            }
+
+            if (copyPixBtn) {
+                copyPixBtn.addEventListener('click', copyPixKey);
+            }
+            
+            if (whatsappButton) {
+                whatsappButton.addEventListener('click', openWhatsappGroup);
+            }
+
+            // Funções
+            function createGameParticles() {
+                const container = document.querySelector('.game-particles');
+                const particleCount = window.innerWidth < 600 ? 15 : 25;
+                
+                for (let i = 0; i < particleCount; i++) {
+                    const particle = document.createElement('div');
+                    particle.classList.add('particle');
+                    
+                    // Posição inicial aleatória
+                    const x = Math.random() * window.innerWidth;
+                    const delay = Math.random() * 15;
+                    const duration = 15 + Math.random() * 10;
+                    const angle = Math.random() * 360;
+                    
+                    particle.style.left = `${x}px`;
+                    particle.style.top = `${window.innerHeight}px`;
+                    particle.style.animationDelay = `${delay}s`;
+                    particle.style.animationDuration = `${duration}s`;
+                    particle.style.setProperty('--angle', `${angle}deg`);
+                    
+                    container.appendChild(particle);
+                }
+            }
+            
+            async function fetchPixData() {
+                try {
+                    const response = await fetch(config.apiUrl);
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    
+                    const data = await response.json();
+                    console.log("API Response:", data);
+                    
+                    // Atualizar a configuração com os dados obtidos
+                    config.pixKey = data.pix || "";
+                    config.whatsappLink = data.whatsapp_grupo || "";
+                    
+                    // Atualizar a interface
+                    const pixKeyElement = document.getElementById('pix-key');
+                    if (pixKeyElement) {
+                        pixKeyElement.textContent = config.pixKey;
+                    }
+                    
+                    if (whatsappButton && config.whatsappLink) {
+                        whatsappButton.classList.remove('hidden');
+                    }
+                    
+                } catch (error) {
+                    console.error('Erro ao buscar dados do PIX:', error);
+                    // Display error message on the page
+                    const pixKeyElement = document.getElementById('pix-key');
+                    if (pixKeyElement) {
+                        pixKeyElement.textContent = "Erro ao carregar chave PIX. Por favor, recarregue a página.";
+                    }
+                }
+            }
+
+            function closeModal() {
+                if (pixCopyModal) pixCopyModal.classList.add('hidden');
+                if (overlay) overlay.classList.add('hidden');
+            }
+
+            function copyPixKey() {
+                const pixKey = config.pixKey;
+                navigator.clipboard.writeText(pixKey).then(() => {
+                    // Mostrar modal de confirmação
+                    if (pixCopyModal && overlay) {
+                        pixCopyModal.classList.remove('hidden');
+                        overlay.classList.remove('hidden');
+                        
+                        // Lançar confetti
+                        confetti({
+                            particleCount: 100,
+                            spread: 70,
+                            origin: { y: 0.6 }
+                        });
+                    }
+                }).catch(err => {
+                    console.error('Erro ao copiar: ', err);
+                    alert('Não foi possível copiar automaticamente. A chave PIX é: ' + pixKey);
+                });
+            }
+            
+            function openWhatsappGroup() {
+                if (config.whatsappLink) {
+                    window.open(config.whatsappLink, '_blank');
+                }
+            }
+        });
+    </script>
+</body>
+</html>
